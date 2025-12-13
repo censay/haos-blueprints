@@ -239,5 +239,5 @@ action:
               {{ trigger_id == 'button2' and press_type == 'long_release' }}
         sequence: !input button2_long
 
-mode: single
+mode: restart
 ```
