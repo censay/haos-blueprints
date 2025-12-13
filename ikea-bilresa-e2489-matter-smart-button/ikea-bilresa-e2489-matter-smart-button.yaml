@@ -15,7 +15,6 @@
 blueprint:
   name: IKEA BILRESA E2489 Dual Button (Matter)
   author: censay
-  schema_version: 1.0.2
   description: >
     Full-featured automation for the IKEA BILRESA E2489 Matter dual-button
     remote. Supports single press, double press, and long press (on release)
