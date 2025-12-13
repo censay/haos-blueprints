@@ -1,0 +1,95 @@
+# Version History:
+# v1.0.0 (Initial) - Basic single press support.
+# v1.1.0 - Added support for short press and long press with separate actions, areas, and notifications.
+blueprint:
+  name: IKEA BILRESA E2489 Matter Smart Button
+  description: A blueprint for automating actions with the IKEA BILRESA E2489 Matter smart button, supporting short and long presses.
+  domain: automation
+  source_url: https://github.com/censay/haos-blueprints/blob/main/ikea-bilresa-e2489-matter-smart-button.yaml
+  author: Censay
+  homeassistant:
+    min_version: "2024.12.0"  # Adjust based on required features, e.g., Matter support
+  input:
+    button_entity:
+      name: Button Entity
+      description: The entity ID of the IKEA BILRESA E2489 button.
+      selector:
+        entity:
+          domain: event
+          device_class: button
+    action_on_short_press:
+      name: Action on Short Press
+      description: What to do when the button is short pressed.
+      selector:
+        action:
+    target_area_short_press:
+      name: Target Area for Short Press
+      description: The area where the short press action should be performed.
+      selector:
+        area:
+          multiple: false
+    enable_notifications_short_press:
+      name: Enable Notifications for Short Press
+      description: Send a notification when the button is short pressed.
+      selector:
+        boolean:
+          default: false
+    action_on_long_press:
+      name: Action on Long Press
+      description: What to do when the button is long pressed.
+      selector:
+        action:
+    target_area_long_press:
+      name: Target Area for Long Press
+      description: The area where the long press action should be performed.
+      selector:
+        area:
+          multiple: false
+    enable_notifications_long_press:
+      name: Enable Notifications for Long Press
+      description: Send a notification when the button is long pressed.
+      selector:
+        boolean:
+          default: false
+
+automation:
+  - alias: "IKEA BILRESA E2489 Button Automation"
+    description: "Automate actions based on IKEA BILRESA E2489 button presses (short and long)."
+    trigger:
+      - platform: event
+        event_type: matter_event
+        event_data:
+          entity_id: !input button_entity
+          action: short_press
+      - platform: event
+        event_type: matter_event
+        event_data:
+          entity_id: !input button_entity
+          action: long_press
+    condition: []
+    action:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.action == 'short_press' }}"
+            sequence:
+              - !input action_on_short_press
+              - if:
+                  - condition: template
+                    value_template: "{{ enable_notifications_short_press }}"
+                then:
+                  - action: notify.notify
+                    data:
+                      message: "Button short pressed in {{ area_name(trigger.event.data.entity_id) }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.event.data.action == 'long_press' }}"
+            sequence:
+              - !input action_on_long_press
+              - if:
+                  - condition: template
+                    value_template: "{{ enable_notifications_long_press }}"
+                then:
+                  - action: notify.notify
+                    data:
+                      message: "Button long pressed in {{ area_name(trigger.event.data.entity_id) }}"

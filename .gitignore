@@ -1,0 +1,16 @@
+# Logs and temporary files
+*.log
+*.tmp
+*.cache
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+
+# Home Assistant specific (if any extras)
+*.db
+*.pkl
