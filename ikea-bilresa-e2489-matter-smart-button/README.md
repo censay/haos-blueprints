@@ -1,4 +1,4 @@
-# IKEA BILRESA E2489 Matter Smart Button Blueprint
+# IKEA BILRESA E2489 Matter Smart Button - Blueprint
 
 [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fcensay%2Fhaos-blueprints%2Frefs%2Fheads%2Fmaster%2Fikea-bilresa-e2489-matter-smart-button%2Fikea-bilresa-e2489-matter-smart-button.yaml)
 
@@ -13,11 +13,12 @@ Options for use (tested with lights and scripts):
 - Initiate scenes
 - Start scripts
 
-## Installation (3 options)
+## Installation (options)
 
-- Search for "IKEA BILRESA" in Settings > Automation & Secenes > Blueprints (tab) > "Discover more blueprints"
-- Manually create and copy contents into `/blueprints/automation/censay/bilresa-remote.yaml`
-- Import a blueprint from this address: < placeholder >
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fcensay%2Fhaos-blueprints%2Frefs%2Fheads%2Fmaster%2Fikea-bilresa-e2489-matter-smart-button%2Fikea-bilresa-e2489-matter-smart-button.yaml)
+- **OR** Search for "IKEA BILRESA" in Settings > Automation & Secenes > Blueprints (tab) > "Discover more blueprints"
+- **OR** Manually copy [full yaml](#yaml) below to `/blueprints/automation/censay/bilresa-remote.yaml`
+- **OR** Import a blueprint from this address: [github.com/censay/haos-blueprints](https://github.com/censay/haos-blueprints/blob/master/ikea-bilresa-e2489-matter-smart-button/ikea-bilresa-e2489-matter-smart-button.yaml)
 
 Restart Home Assistant or go to Devleoper Tools and check all yaml to reload your yaml files including the new blueprint.
 
@@ -59,3 +60,184 @@ This blueprint was created by [censay](https://github.com/censay).
 ## Changelog
 
 - **Version 1.0.2**: Initial release
+
+## YAML
+```
+# ===================================================================
+# IKEA BILRESA E2489 Dual Button
+# Blueprint Template v1.0.2
+#
+# Internal Versioning:
+#   schema_version: 1.0.2
+#   last_updated: 2025-12-13
+#
+# Power-User Notes:
+#   - This device exposes two event entities, one per physical button.
+#   - You must select the correct event entity for Button 1 and Button 2.
+#   - Each press updates the entity state (timestamp) and sets attributes.event_type.
+# ===================================================================
+
+blueprint:
+  name: IKEA BILRESA E2489 Dual Button (Matter)
+  author: censay
+  description: >
+    Full-featured automation for the IKEA BILRESA E2489 Matter dual-button
+    remote. Supports single press, double press, and long press (on release)
+    for both buttons. Uses event entities exposed by Home Assistant for
+    Matter devices. Single-press actions are prioritized for reliability.
+  domain: automation
+  source_url: https://github.com/censay/haos-blueprints
+  homeassistant:
+    min_version: 2025.12.0
+
+  input:
+    target_device:
+      name: BILRESA Button Device
+      description: >
+        Select the IKEA BILRESA E2489 device. This is informational only in
+        v1.0.2; triggers are bound to the per-button event entities below.
+      selector:
+        device:
+          filter:
+            - manufacturer: IKEA of Sweden
+
+    button1_event:
+      name: Button 1 – Event Entity
+      description: >
+        Select the event entity for Button 1 (for example:
+        event.bilresa_dual_button_button_1_2).
+      selector:
+        entity:
+          domain: event
+
+    button2_event:
+      name: Button 2 – Event Entity
+      description: >
+        Select the event entity for Button 2 (for example:
+        event.bilresa_dual_button_button_2_2).
+      selector:
+        entity:
+          domain: event
+
+    # ---------------------------------------------------------------
+    # BUTTON 1 ACTIONS
+    # ---------------------------------------------------------------
+
+    button1_single:
+      name: Button 1 – Single Press
+      description: Action for Button 1 single press (multi_press_1).
+      default: []
+      selector:
+        action: {}
+
+    button1_double:
+      name: Button 1 – Double Press
+      description: Action for Button 1 double press (multi_press_2).
+      default: []
+      selector:
+        action: {}
+
+    button1_long:
+      name: Button 1 – Long Press (on release)
+      description: Action for Button 1 long press completion (long_release).
+      default: []
+      selector:
+        action: {}
+
+    # ---------------------------------------------------------------
+    # BUTTON 2 ACTIONS
+    # ---------------------------------------------------------------
+
+    button2_single:
+      name: Button 2 – Single Press
+      description: Action for Button 2 single press (multi_press_1).
+      default: []
+      selector:
+        action: {}
+
+    button2_double:
+      name: Button 2 – Double Press
+      description: Action for Button 2 double press (multi_press_2).
+      default: []
+      selector:
+        action: {}
+
+    button2_long:
+      name: Button 2 – Long Press (on release)
+      description: Action for Button 2 long press completion (long_release).
+      default: []
+      selector:
+        action: {}
+
+# ===================================================================
+# AUTOMATION LOGIC
+# ===================================================================
+
+variables:
+  button1_entity: !input button1_event
+  button2_entity: !input button2_event
+
+trigger:
+  - platform: state
+    id: button1
+    entity_id: !input button1_event
+  - platform: state
+    id: button2
+    entity_id: !input button2_event
+  # No 'to:' filter because event entities use timestamp states
+
+condition: []
+
+action:
+  - variables:
+      press_type: "{{ trigger.to_state.attributes.event_type }}"
+      trigger_id: "{{ trigger.id }}"
+
+  - choose:
+
+      # -------------------------------------------------------------
+      # BUTTON 1
+      # -------------------------------------------------------------
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger_id == 'button1' and press_type == 'multi_press_1' }}
+        sequence: !input button1_single
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger_id == 'button1' and press_type == 'multi_press_2' }}
+        sequence: !input button1_double
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger_id == 'button1' and press_type == 'long_release' }}
+        sequence: !input button1_long
+
+      # -------------------------------------------------------------
+      # BUTTON 2
+      # -------------------------------------------------------------
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger_id == 'button2' and press_type == 'multi_press_1' }}
+        sequence: !input button2_single
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger_id == 'button2' and press_type == 'multi_press_2' }}
+        sequence: !input button2_double
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger_id == 'button2' and press_type == 'long_release' }}
+        sequence: !input button2_long
+
+mode: single
+```
