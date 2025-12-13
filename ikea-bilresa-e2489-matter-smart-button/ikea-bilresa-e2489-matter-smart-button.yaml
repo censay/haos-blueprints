@@ -1,21 +1,31 @@
 # ===================================================================
 # IKEA BILRESA E2489 Dual Button – Matter Edition
-# Blueprint Template v1.0.0
+# Blueprint Template v1.0.1
+#
 # Internal Versioning:
-#   schema_version: 1.0.0
+#   schema_version: 1.0.1
 #   last_updated: 2025-12-13
 #   notes:
 #     - Event model based on state_changed of event entities
 #     - Press types: multi_press_1, multi_press_2, long_release
 #     - Long-press model: Option A (trigger on release only)
+#     - v1.0.1 adds per-button actions while prioritizing single-press
+#
+# Power-User Notes:
+#   - This device exposes two event entities, one per physical button.
+#   - Each press updates the entity state (timestamp) and sets attributes.event_type.
+#   - The actionable field is ALWAYS: trigger.to_state.attributes.event_type
+#   - Single-press is the most reliable and most commonly used action.
+#   - All other actions are active but secondary.
 # ===================================================================
 
 blueprint:
   name: IKEA BILRESA E2489 Dual Button (Matter)
   description: >
-    Template blueprint for handling single press, double press, and long press
-    (on release) for the IKEA BILRESA E2489 Matter dual-button remote.
-    Uses event entities exposed by Home Assistant for Matter devices.
+    Full-featured automation for the IKEA BILRESA E2489 Matter dual-button
+    remote. Supports single press, double press, and long press (on release)
+    for both buttons. Uses event entities exposed by Home Assistant for
+    Matter devices. Single-press actions are prioritized for reliability.
   domain: automation
   source_url: https://community.home-assistant.io/
   homeassistant:
@@ -25,32 +35,59 @@ blueprint:
     target_device:
       name: BILRESA Button Device
       description: >
-        Select the IKEA BILRESA E2489 device. This blueprint will automatically
-        detect the event entities associated with the device.
+        Select the IKEA BILRESA E2489 device. This blueprint automatically
+        detects the event entities associated with the device.
       selector:
         device:
           filter:
             - manufacturer: IKEA of Sweden
 
-    single_press_action:
-      name: Single Press Action
-      description: Action to run when a single press (multi_press_1) is detected.
+    # ---------------------------------------------------------------
+    # BUTTON 1 ACTIONS
+    # ---------------------------------------------------------------
+
+    button1_single:
+      name: Button 1 – Single Press
+      description: Action for Button 1 single press (multi_press_1).
       default: []
       selector:
         action: {}
 
-    double_press_action:
-      name: Double Press Action
-      description: Action to run when a double press (multi_press_2) is detected.
+    button1_double:
+      name: Button 1 – Double Press
+      description: Action for Button 1 double press (multi_press_2).
       default: []
       selector:
         action: {}
 
-    long_press_action:
-      name: Long Press Action
-      description: >
-        Action to run when a long press is completed (long_release).
-        This blueprint uses the long-release event as the trigger.
+    button1_long:
+      name: Button 1 – Long Press (on release)
+      description: Action for Button 1 long press completion (long_release).
+      default: []
+      selector:
+        action: {}
+
+    # ---------------------------------------------------------------
+    # BUTTON 2 ACTIONS
+    # ---------------------------------------------------------------
+
+    button2_single:
+      name: Button 2 – Single Press
+      description: Action for Button 2 single press (multi_press_1).
+      default: []
+      selector:
+        action: {}
+
+    button2_double:
+      name: Button 2 – Double Press
+      description: Action for Button 2 double press (multi_press_2).
+      default: []
+      selector:
+        action: {}
+
+    button2_long:
+      name: Button 2 – Long Press (on release)
+      description: Action for Button 2 long press completion (long_release).
       default: []
       selector:
         action: {}
@@ -62,32 +99,75 @@ blueprint:
 variables:
   device_id: !input target_device
 
+  # Extract all event entities belonging to the device
+  event_entities: >
+    {{ expand(device_entities(device_id))
+       | select('match', '^event\\.')
+       | map(attribute='entity_id')
+       | list }}
+
 trigger:
   - platform: state
-    entity_id:
-      - "{{ expand(device_entities(device_id)) | select('match', '^event\\.') | list }}"
+    entity_id: "{{ event_entities }}"
     # No 'to:' filter because event entities use timestamp states
 
 condition: []
 
 action:
+  - variables:
+      press_type: "{{ trigger.to_state.attributes.event_type }}"
+      entity_name: "{{ trigger.entity_id }}"
+
   - choose:
-      - conditions:
-          - condition: template
-            value_template: >
-              {{ trigger.to_state.attributes.event_type == 'multi_press_1' }}
-        sequence: !input single_press_action
+
+      # -------------------------------------------------------------
+      # BUTTON 1
+      # -------------------------------------------------------------
 
       - conditions:
           - condition: template
             value_template: >
-              {{ trigger.to_state.attributes.event_type == 'multi_press_2' }}
-        sequence: !input double_press_action
+              {{ entity_name.endswith('_button_1_2')
+                 and press_type == 'multi_press_1' }}
+        sequence: !input button1_single
 
       - conditions:
           - condition: template
             value_template: >
-              {{ trigger.to_state.attributes.event_type == 'long_release' }}
-        sequence: !input long_press_action
+              {{ entity_name.endswith('_button_1_2')
+                 and press_type == 'multi_press_2' }}
+        sequence: !input button1_double
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ entity_name.endswith('_button_1_2')
+                 and press_type == 'long_release' }}
+        sequence: !input button1_long
+
+      # -------------------------------------------------------------
+      # BUTTON 2
+      # -------------------------------------------------------------
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ entity_name.endswith('_button_2_2')
+                 and press_type == 'multi_press_1' }}
+        sequence: !input button2_single
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ entity_name.endswith('_button_2_2')
+                 and press_type == 'multi_press_2' }}
+        sequence: !input button2_double
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ entity_name.endswith('_button_2_2')
+                 and press_type == 'long_release' }}
+        sequence: !input button2_long
 
 mode: single
