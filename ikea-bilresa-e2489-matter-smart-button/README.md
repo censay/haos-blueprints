@@ -1,82 +1,59 @@
 # IKEA BILRESA E2489 Matter Smart Button Blueprint
 
-## Product Information
+![BILRESA Matter Remote](bilresa-remote.jpg)
 
-**Product Name:** BILRESA Remote control - white smart/dual button  
-**Article Number:** 806.178.76  
-**Price:** $5.99 USD (as of December 12, 2025)  
-**Product Link:** [IKEA BILRESA Product Page](https://www.ikea.com/us/en/p/bilresa-remote-control-white-smart-dual-button-80617876/)
+This blueprint provides automation for controlling the [IKEA BILRESA E2489 Matter Smart Button](https://www.ikea.com/us/en/p/bilresa-remote-control-white-smart-dual-button-80617876/) in Home Assistant. 
 
-### Description
-This remote control with dual buttons makes it easier to operate your smart products – helping you to make life at home smoother, more comfortable and safer.
+Options for use (tested with lights and scripts):
 
-Use to turn smart products on/off, dim and change the color of light sources, or operate a group or preset scenes.
+- Turn on/off lights
+- Control the brightness
+- Initiate scenes
+- Start scripts
 
-This smart product uses the universal standard Matter, making it easy to install, operate and add to DIRIGERA hub and to other well-known systems.
+## Installation (3 options)
 
-Smart bulbs, sensors and remote controls from IKEA work together - across generations. Mix, expand and control your smart home your way.
+- Search for "IKEA BILRESA" in Settings > Automation & Secenes > Blueprints (tab) > "Discover more blueprints"
+- Manually create and copy contents into `/blueprints/automation/censay/bilresa-remote.yaml`
+- Import a blueprint from this address: < placeholder >
 
-### Features
-- Dual button remote control
-- Matter-compatible for interoperability with various smart home systems (Amazon, Apple, Google, Homey, Samsung)
-- Supports on/off, dimming, color changing, and scene/group control
-- Designed by W Braasch/M Arvonen
+Restart Home Assistant or go to Devleoper Tools and check all yaml to reload your yaml files including the new blueprint.
 
-### Specifications
-- **Dimensions:** Height: 1 ¼ ", Length: 3 ", Width: 1 "
-- **Weight:** 2 oz
-- **Material:** ABS plastic
-- **Batteries:** Sold separately; recommended 2 x LADDA rechargeable batteries HR03 AAA 1.2V
+## Usage
 
-### Images
-![BILRESA Remote Control](bilresa-remote-control.jpg)
+To use this blueprint, follow these steps:
 
-## Blueprint Details
+1. Navigate to the "Automations" section in the Home Assistant UI.
+2. Click on the "Blueprints" tab.
+3. Search for the "IKEA BILRESA E2489 Matter Smart Button" blueprint.
+4. Click on the "Add" button to add the blueprint to your automations.
 
-This folder contains the Home Assistant blueprint for automating the IKEA BILRESA E2489 Matter smart button.
+### Inputs
 
-### Files
-- `ikea-bilresa-e2489-matter-smart-button.yaml` - The blueprint YAML file
-- `bilresa-remote-control.jpg` - Product image
-- `README.md` - This file
+The following inputs are required for this blueprint:
 
-### Installation
-1. Download the `ikea-bilresa-e2489-matter-smart-button.yaml` file.
-2. In Home Assistant, go to Settings > Automations & Scenes > Blueprints > Import Blueprint.
-3. Paste the YAML content or upload the file.
-4. Ensure your Home Assistant version is 2024.12.0 or higher.
+- **Button Type**: Select the type of button press (single, double, long press, etc.).
+- **Action**: Select the action to perform when the button is pressed (turn on, turn off, change brightness, etc.).
+- **Entity**: Select the entity to control (e.g., switch, light, camera toggle).
 
-### Configuration
-- **Button Entity**: Select the event entity for your IKEA button.
-- **Action on Short Press**: Choose the action to trigger on short press.
-- **Target Area for Short Press**: Select the area for the short press action.
-- **Enable Notifications for Short Press**: Toggle to send notifications on short press.
-- **Action on Long Press**: Choose the action to trigger on long press.
-- **Target Area for Long Press**: Select the area for the long press action.
-- **Enable Notifications for Long Press**: Toggle to send notifications on long press.
+## Requirements
 
-### Example Usage
-```yaml
-blueprint: censay/haos-blueprints/ikea-bilresa-e2489-matter-smart-button
-input:
-  button_entity: event.ikea_button_press
-  action_on_short_press:
-    service: light.turn_on
-    target:
-      area_id: living_room
-  target_area_short_press: living_room
-  enable_notifications_short_press: true
-  action_on_long_press:
-    service: light.turn_off
-    target:
-      area_id: living_room
-  target_area_long_press: living_room
-  enable_notifications_long_press: false
-```
+This blueprint is built from ["Triggering the holidays" 2025.12](https://www.home-assistant.io/blog/2025/12/03/release-202512/) guidance so is designed to work best with...
 
-### Changelog
-- v1.0.0: Initial release with basic press support.
-- v1.1.0: Added short and long press differentiation.
+- Home Assistant version 2025.12.1 or later.
 
-### Support
-For issues or contributions, visit the [GitHub Repo](https://github.com/censay/haos-blueprints).
+## License
+
+This blueprint is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+## Contributing
+
+Contributions are welcome! If you have any suggestions, improvements, or bug fixes, please submit a pull request or open an issue on this repository.
+
+## Credits
+
+This blueprint was created by [censay](https://github.com/censay).
+
+## Changelog
+
+- **Version 1.0.2**: Initial release.
