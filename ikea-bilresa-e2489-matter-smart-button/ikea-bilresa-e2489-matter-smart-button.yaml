@@ -1,33 +1,28 @@
 # ===================================================================
 # IKEA BILRESA E2489 Dual Button – Matter Edition
-# Blueprint Template v1.0.1
+# Blueprint Template v1.0.2
 #
 # Internal Versioning:
-#   schema_version: 1.0.1
+#   schema_version: 1.0.2
 #   last_updated: 2025-12-13
-#   notes:
-#     - Event model based on state_changed of event entities
-#     - Press types: multi_press_1, multi_press_2, long_release
-#     - Long-press model: Option A (trigger on release only)
-#     - v1.0.1 adds per-button actions while prioritizing single-press
 #
 # Power-User Notes:
 #   - This device exposes two event entities, one per physical button.
+#   - You must select the correct event entity for Button 1 and Button 2.
 #   - Each press updates the entity state (timestamp) and sets attributes.event_type.
-#   - The actionable field is ALWAYS: trigger.to_state.attributes.event_type
-#   - Single-press is the most reliable and most commonly used action.
-#   - All other actions are active but secondary.
 # ===================================================================
 
 blueprint:
   name: IKEA BILRESA E2489 Dual Button (Matter)
+  author: censay
+  schema_version: 1.0.2
   description: >
     Full-featured automation for the IKEA BILRESA E2489 Matter dual-button
     remote. Supports single press, double press, and long press (on release)
     for both buttons. Uses event entities exposed by Home Assistant for
     Matter devices. Single-press actions are prioritized for reliability.
   domain: automation
-  source_url: https://community.home-assistant.io/
+  source_url: https://github.com/censay/haos-blueprints
   homeassistant:
     min_version: 2025.12.0
 
@@ -35,12 +30,30 @@ blueprint:
     target_device:
       name: BILRESA Button Device
       description: >
-        Select the IKEA BILRESA E2489 device. This blueprint automatically
-        detects the event entities associated with the device.
+        Select the IKEA BILRESA E2489 device. This is informational only in
+        v1.0.2; triggers are bound to the per-button event entities below.
       selector:
         device:
           filter:
             - manufacturer: IKEA of Sweden
+
+    button1_event:
+      name: Button 1 – Event Entity
+      description: >
+        Select the event entity for Button 1 (for example:
+        event.bilresa_dual_button_button_1_2).
+      selector:
+        entity:
+          domain: event
+
+    button2_event:
+      name: Button 2 – Event Entity
+      description: >
+        Select the event entity for Button 2 (for example:
+        event.bilresa_dual_button_button_2_2).
+      selector:
+        entity:
+          domain: event
 
     # ---------------------------------------------------------------
     # BUTTON 1 ACTIONS
@@ -97,26 +110,24 @@ blueprint:
 # ===================================================================
 
 variables:
-  device_id: !input target_device
-
-  # Extract all event entities belonging to the device
-  event_entities: >
-    {{ expand(device_entities(device_id))
-       | select('match', '^event\\.')
-       | map(attribute='entity_id')
-       | list }}
+  button1_entity: !input button1_event
+  button2_entity: !input button2_event
 
 trigger:
   - platform: state
-    entity_id: "{{ event_entities }}"
-    # No 'to:' filter because event entities use timestamp states
+    id: button1
+    entity_id: !input button1_event
+  - platform: state
+    id: button2
+    entity_id: !input button2_event
+  # No 'to:' filter because event entities use timestamp states
 
 condition: []
 
 action:
   - variables:
       press_type: "{{ trigger.to_state.attributes.event_type }}"
-      entity_name: "{{ trigger.entity_id }}"
+      trigger_id: "{{ trigger.id }}"
 
   - choose:
 
@@ -127,22 +138,19 @@ action:
       - conditions:
           - condition: template
             value_template: >
-              {{ entity_name.endswith('_button_1_2')
-                 and press_type == 'multi_press_1' }}
+              {{ trigger_id == 'button1' and press_type == 'multi_press_1' }}
         sequence: !input button1_single
 
       - conditions:
           - condition: template
             value_template: >
-              {{ entity_name.endswith('_button_1_2')
-                 and press_type == 'multi_press_2' }}
+              {{ trigger_id == 'button1' and press_type == 'multi_press_2' }}
         sequence: !input button1_double
 
       - conditions:
           - condition: template
             value_template: >
-              {{ entity_name.endswith('_button_1_2')
-                 and press_type == 'long_release' }}
+              {{ trigger_id == 'button1' and press_type == 'long_release' }}
         sequence: !input button1_long
 
       # -------------------------------------------------------------
@@ -152,22 +160,19 @@ action:
       - conditions:
           - condition: template
             value_template: >
-              {{ entity_name.endswith('_button_2_2')
-                 and press_type == 'multi_press_1' }}
+              {{ trigger_id == 'button2' and press_type == 'multi_press_1' }}
         sequence: !input button2_single
 
       - conditions:
           - condition: template
             value_template: >
-              {{ entity_name.endswith('_button_2_2')
-                 and press_type == 'multi_press_2' }}
+              {{ trigger_id == 'button2' and press_type == 'multi_press_2' }}
         sequence: !input button2_double
 
       - conditions:
           - condition: template
             value_template: >
-              {{ entity_name.endswith('_button_2_2')
-                 and press_type == 'long_release' }}
+              {{ trigger_id == 'button2' and press_type == 'long_release' }}
         sequence: !input button2_long
 
 mode: single
