@@ -1,95 +1,93 @@
-# Version History:
-# v1.0.0 (Initial) - Basic single press support.
-# v1.1.0 - Added support for short press and long press with separate actions, areas, and notifications.
-blueprint:
-  name: IKEA BILRESA E2489 Matter Smart Button
-  description: A blueprint for automating actions with the IKEA BILRESA E2489 Matter smart button, supporting short and long presses.
-  domain: automation
-  source_url: https://github.com/censay/haos-blueprints/blob/main/ikea-bilresa-e2489-matter-smart-button.yaml
-  author: Censay
-  homeassistant:
-    min_version: "2024.12.0"  # Adjust based on required features, e.g., Matter support
-  input:
-    button_entity:
-      name: Button Entity
-      description: The entity ID of the IKEA BILRESA E2489 button.
-      selector:
-        entity:
-          domain: event
-          device_class: button
-    action_on_short_press:
-      name: Action on Short Press
-      description: What to do when the button is short pressed.
-      selector:
-        action:
-    target_area_short_press:
-      name: Target Area for Short Press
-      description: The area where the short press action should be performed.
-      selector:
-        area:
-          multiple: false
-    enable_notifications_short_press:
-      name: Enable Notifications for Short Press
-      description: Send a notification when the button is short pressed.
-      selector:
-        boolean:
-          default: false
-    action_on_long_press:
-      name: Action on Long Press
-      description: What to do when the button is long pressed.
-      selector:
-        action:
-    target_area_long_press:
-      name: Target Area for Long Press
-      description: The area where the long press action should be performed.
-      selector:
-        area:
-          multiple: false
-    enable_notifications_long_press:
-      name: Enable Notifications for Long Press
-      description: Send a notification when the button is long pressed.
-      selector:
-        boolean:
-          default: false
+# ===================================================================
+# IKEA BILRESA E2489 Dual Button – Matter Edition
+# Blueprint Template v1.0.0
+# Internal Versioning:
+#   schema_version: 1.0.0
+#   last_updated: 2025-12-13
+#   notes:
+#     - Event model based on state_changed of event entities
+#     - Press types: multi_press_1, multi_press_2, long_release
+#     - Long-press model: Option A (trigger on release only)
+# ===================================================================
 
-automation:
-  - alias: "IKEA BILRESA E2489 Button Automation"
-    description: "Automate actions based on IKEA BILRESA E2489 button presses (short and long)."
-    trigger:
-      - platform: event
-        event_type: matter_event
-        event_data:
-          entity_id: !input button_entity
-          action: short_press
-      - platform: event
-        event_type: matter_event
-        event_data:
-          entity_id: !input button_entity
-          action: long_press
-    condition: []
-    action:
-      - choose:
-          - conditions:
-              - condition: template
-                value_template: "{{ trigger.event.data.action == 'short_press' }}"
-            sequence:
-              - !input action_on_short_press
-              - if:
-                  - condition: template
-                    value_template: "{{ enable_notifications_short_press }}"
-                then:
-                  - action: notify.notify
-                    data:
-                      message: "Button short pressed in {{ area_name(trigger.event.data.entity_id) }}"
-          - conditions:
-              - condition: template
-                value_template: "{{ trigger.event.data.action == 'long_press' }}"
-            sequence:
-              - !input action_on_long_press
-              - if:
-                  - condition: template
-                    value_template: "{{ enable_notifications_long_press }}"
-                then:
-                  - action: notify.notify
-                    data:
-                      message: "Button long pressed in {{ area_name(trigger.event.data.entity_id) }}"
+blueprint:
+  name: IKEA BILRESA E2489 Dual Button (Matter)
+  description: >
+    Template blueprint for handling single press, double press, and long press
+    (on release) for the IKEA BILRESA E2489 Matter dual-button remote.
+    Uses event entities exposed by Home Assistant for Matter devices.
+  domain: automation
+  source_url: https://community.home-assistant.io/
+  homeassistant:
+    min_version: 2025.12.0
+
+  input:
+    target_device:
+      name: BILRESA Button Device
+      description: >
+        Select the IKEA BILRESA E2489 device. This blueprint will automatically
+        detect the event entities associated with the device.
+      selector:
+        device:
+          filter:
+            - manufacturer: IKEA of Sweden
+
+    single_press_action:
+      name: Single Press Action
+      description: Action to run when a single press (multi_press_1) is detected.
+      default: []
+      selector:
+        action: {}
+
+    double_press_action:
+      name: Double Press Action
+      description: Action to run when a double press (multi_press_2) is detected.
+      default: []
+      selector:
+        action: {}
+
+    long_press_action:
+      name: Long Press Action
+      description: >
+        Action to run when a long press is completed (long_release).
+        This blueprint uses the long-release event as the trigger.
+      default: []
+      selector:
+        action: {}
+
+# ===================================================================
+# AUTOMATION LOGIC
+# ===================================================================
+
+variables:
+  device_id: !input target_device
+
+trigger:
+  - platform: state
+    entity_id:
+      - "{{ expand(device_entities(device_id)) | select('match', '^event\\.') | list }}"
+    # No 'to:' filter because event entities use timestamp states
+
+condition: []
+
+action:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.attributes.event_type == 'multi_press_1' }}
+        sequence: !input single_press_action
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.attributes.event_type == 'multi_press_2' }}
+        sequence: !input double_press_action
+
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.attributes.event_type == 'long_release' }}
+        sequence: !input long_press_action
+
+mode: single
