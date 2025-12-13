@@ -7,11 +7,13 @@ This blueprint provides automation for controlling the IKEA BILRESA E2489 Matter
 - Initiate scenes
 - Start scripts
 
-## Installation
+## Installation (3 options)
 
-1. Clone this repository to your Home Assistant configuration directory.
-2. Copy the `bilresa-remote.yaml` blueprint file to the `blueprints` directory.
-3. Restart Home Assistant to load the new blueprint.
+- Search for "IKEA BILRESA" in Settings > Automation & Secenes > Blueprints (tab) > "Discover more blueprints"
+- Manually create and copy contents into `/blueprints/automation/censay/bilresa-remote.yaml`
+- Import a blueprint from this address: < placeholder >
+
+Restart Home Assistant or go to Devleoper Tools and check all yaml to reload your yaml files including the new blueprint.
 
 ## Usage
 
@@ -22,7 +24,7 @@ To use this blueprint, follow these steps:
 3. Search for the "IKEA BILRESA E2489 Matter Smart Button" blueprint.
 4. Click on the "Add" button to add the blueprint to your automations.
 
-## Inputs
+### Inputs
 
 The following inputs are required for this blueprint:
 
@@ -30,7 +32,7 @@ The following inputs are required for this blueprint:
 - **Action**: Select the action to perform when the button is pressed (turn on, turn off, change brightness, etc.).
 - **Entity**: Select the entity to control (e.g., switch.bilresa_remote).
 
-## Example Automations
+### Example Automations
 
 Here are some example automations you can create using this blueprint:
 
@@ -46,11 +48,9 @@ Here are some example automations you can create using this blueprint:
 
 ## Requirements
 
-This blueprint requires the following:
+This blueprint is built from guidance from the "trigger" 2025.12 HAOS update.
 
 - Home Assistant version 2022.12 or later.
-- The `ikea_tradfri` integration configured and enabled.
-- The `switch.bilresa_remote` entity available in your Home Assistant configuration.
 
 ## License
 
