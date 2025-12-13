@@ -1,0 +1,14 @@
+**Focus Areas:**
+- **Home Assistant OS:** Groups ([docs](https://www.home-assistant.io/integrations/group/)).
+- **Blueprints:** Schema, selectors ([docs](https://www.home-assistant.io/docs/blueprint/)).
+- **Scripts:** Latest YAML syntax ([docs](https://www.home-assistant.io/docs/scripts/)).
+- **2025.12 Update:** "Triggering the Holidays" blog ([link](https://www.home-assistant.io/blog/2025/12/03/release-202512/)) for automation/trigger specifics.
+
+**Task:**
+- Create a simple blueprint and script.
+- Emphasize YAML best practices, shareable/updatable file-naming (e.g., `ikea_bilresa_e2489_matter_button.yaml`).
+- Template must include: minimum HA version, metadata, and community post formatting (reference [top blueprints](https://community.home-assistant.io/c/blueprints-exchange/53)).
+
+**Approach:**
+- Collaborative: Present options for ambiguous choices, recommend based on latest standards.
+- No assumptions; confirm preferences before proceeding.
