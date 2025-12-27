@@ -1,10 +1,14 @@
 # ===================================================================
-# IKEA BILRESA E2489 Dual Button – Matter Edition
-# Blueprint Template v1.0.2
+# IKEA BILRESA E2489 Dual Button
+# Blueprint Template v1.0.3
 #
 # Internal Versioning:
-#   schema_version: 1.0.2
-#   last_updated: 2025-12-13
+#   schema_version: 1.0.3
+#   last_updated: 2025-12-27
+#
+# Changelog:
+#   v1.0.3: Added not_from/not_to filters to prevent re-triggering on HA/Matter restarts (https://community.home-assistant.io/t/ikea-bilresa-matter-button-blueprint-for-ikea-matter-over-thread-button-actions-scripts-and-entities/962344/12)
+#   v1.0.2: Initial release
 #
 # Power-User Notes:
 #   - This device exposes two event entities, one per physical button.
@@ -23,14 +27,13 @@ blueprint:
   domain: automation
   source_url: https://github.com/censay/haos-blueprints
   homeassistant:
-    min_version: 2025.12.0
+    min_version: 2025.12.1
 
   input:
     target_device:
       name: BILRESA Button Device
       description: >
-        Select the IKEA BILRESA E2489 device. This is informational only in
-        v1.0.2; triggers are bound to the per-button event entities below.
+        Select the IKEA BILRESA E2489 matter device.
       selector:
         device:
           filter:
@@ -116,10 +119,14 @@ trigger:
   - platform: state
     id: button1
     entity_id: !input button1_event
+    not_from: 'unavailable'
+    not_to: 'unavailable'
   - platform: state
     id: button2
     entity_id: !input button2_event
-  # No 'to:' filter because event entities use timestamp states
+    not_from: 'unavailable'
+    not_to: 'unavailable'
+  # Added not_from/not_to filters to prevent re-triggering on HA/Matter restarts; event entities use timestamp states
 
 condition: []
 
