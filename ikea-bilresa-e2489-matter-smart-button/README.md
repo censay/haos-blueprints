@@ -58,7 +58,7 @@ Contributions are welcome! If you have any suggestions, improvements, or bug fix
 This blueprint was created by [censay](https://github.com/censay).
 
 ## Changelog
-
+ - **Version 1.0.3**: Added [not_from/not_to](https://community.home-assistant.io/t/ikea-bilresa-matter-button-blueprint-for-ikea-matter-over-thread-button-actions-scripts-and-entities/962344/12) filters to prevent re-triggering on HA/Matter restarts ()
 - **Version 1.0.2**: Initial release
 
 ## YAML
