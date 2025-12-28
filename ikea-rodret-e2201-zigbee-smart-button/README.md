@@ -1,10 +1,15 @@
+Quickly and easily use your last-chance [IKEA RODRET remotes]((https://www.ikea.com/us/en/p/rodret-wireless-dimmer-power-switch-smart-white-80559800/)) to set scenes, dim, and power lights.
+
+To Do: 
+- Update to [2025.12: Triggering the holidays  🎄](https://www.home-assistant.io/blog/2025/12/03/release-202512/) standards and schemas
+
 # IKEA RODRET E2201 Zigbee Smart Button - Blueprint
 
 [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fcensay%2Fhaos-blueprints%2Frefs%2Fheads%2Fmaster%2Fikea-rodret-e2201-zigbee-smart-button%2Fikea-rodret-e2201-zigbee-smart-button.yaml)
 
-![RODRET Zigbee Button](rodret-smart-remote-e2201.jpg)
+![RODRET Zigbee Button](https://github.com/censay/haos-blueprints/blob/master/ikea-rodret-e2201-zigbee-smart-button/rodret-smart-remote-e2201.jpg?raw=truelob/master/ikea-rodret-e2201-zigbee-smart-button/rodret-smart-remote-e2201.jpg)
 
-This blueprint provides automation for controlling lights with the [IKEA RODRET E2201 Zigbee Smart Button](https://www.ikea.com/us/en/p/rodret-wireless-smart-button-white-80546436/) in Home Assistant. 
+This blueprint provides automation for controlling lights with the [IKEA RODRET E2201 Zigbee Smart Button](https://www.ikea.com/us/en/p/rodret-wireless-dimmer-power-switch-smart-white-80559800/) in Home Assistant.
 
 Options for use (tested with lights):
 
@@ -16,8 +21,8 @@ Options for use (tested with lights):
 ## Installation (options)
 
 [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fcensay%2Fhaos-blueprints%2Frefs%2Fheads%2Fmaster%2Fikea-rodret-e2201-zigbee-smart-button%2Fikea-rodret-e2201-zigbee-smart-button.yaml)
-- **OR** Search for "IKEA RODRET" in Settings > Automation & Secenes > Blueprints (tab) > "Discover more blueprints"
-- **OR** Manually copy [full yaml](#yaml) below to `/blueprints/automation/censay/rodret-button.yaml`
+- **OR** Search for "IKEA RODRET E2201" in Settings > Automation & Secenes > Blueprints (tab) > "Discover more blueprints"
+- **OR** Manually copy [full yaml](#yaml) below to `/blueprints/automation/censay/ikea-rodret-e2201-zigbee-smart-button.yaml`
 - **OR** Import a blueprint from this address: [github.com/censay/haos-blueprints](https://github.com/censay/haos-blueprints/blob/master/ikea-rodret-e2201-zigbee-smart-button/ikea-rodret-e2201-zigbee-smart-button.yaml)
 
 Restart Home Assistant or go to Devleoper Tools and check all yaml to reload your yaml files including the new blueprint.
@@ -55,7 +60,7 @@ Contributions are welcome! If you have any suggestions, improvements, or bug fix
 
 ## Credits
 
-This blueprint was created by [censay](https://github.com/censay).
+This blueprint was created by [censay](https://github.com/censay) based on previous work by @damru.
 
 ## Changelog
 
