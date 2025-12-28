@@ -1,7 +1,7 @@
 blueprint:
   homeassistant:
-    min_version: 2024.10.0
-  author: censay (expanded from @damru)
+    min_version: 2025.12.1
+  author: censay
   domain: automation
   name: "💡 IKEA RODRET E2201 Zigbee Smart Button"
   description: |

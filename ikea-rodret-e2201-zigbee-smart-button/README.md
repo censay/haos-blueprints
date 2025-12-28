@@ -70,10 +70,10 @@ This blueprint was created by [censay](https://github.com/censay) based on previ
 ```
 blueprint:
   homeassistant:
-    min_version: 2024.10.0
-  author: censay (built from damru)
+    min_version: 2025.12.1
+  author: censay
   domain: automation
-  name: "💡 IKEA RODRET E2201 Zigbee Smart Button 1.0.2"
+  name: "💡 IKEA RODRET E2201 Zigbee Smart Button"
   description: |
     ✨ Changelog since 1.0.0:
     - 1.0.0: Removed brightness slider & force brightness inputs.
