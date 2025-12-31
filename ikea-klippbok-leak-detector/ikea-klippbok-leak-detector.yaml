@@ -1,0 +1,128 @@
+# ===================================================================
+# 💧 Leak Alerts for Selected Sensors (Matter)
+# Version: 1.0.4
+#
+# Watches ONLY the sensors you select.
+# Alerts when any becomes wet.
+# Sends all‑clear when all are dry for 15 minutes.
+# System notifications always work.
+# Mobile notifications are optional (beta).
+# ===================================================================
+
+blueprint:
+  name: 💧 Leak Alerts for Selected Sensors (Matter)
+  author: censay
+  description: >
+    Persistent notification moisture matter sensors, and sends an all‑clear
+    when everything is dry for 15 minutes. System notifications always
+    work. Mobile notifications are optional (beta).
+  domain: automation
+  homeassistant:
+    min_version: 2025.12.1
+
+  input:
+
+    moisture_sensors:
+      name: 💧 Leak Sensors to Monitor
+      selector:
+        entity:
+          multiple: true
+          domain: binary_sensor
+          device_class: moisture
+
+    notify_mobile:
+      name: 📱 Send Mobile Notifications? (beta)
+      description: >
+        Sends alerts to notify.notify. If your mobile app is not set up,
+        nothing breaks — mobile alerts are simply skipped.
+      default: false
+      selector:
+        boolean: {}
+
+# ===================================================================
+# AUTOMATION LOGIC
+# ===================================================================
+
+trigger:
+  - platform: state
+    id: wet
+    entity_id: !input moisture_sensors
+    to: "on"
+
+  - platform: state
+    id: dry
+    entity_id: !input moisture_sensors
+    to: "off"
+    for:
+      minutes: 15
+
+condition: []
+
+action:
+
+  - variables:
+      moisture_sensors: !input moisture_sensors
+      sensors: "{{ expand(moisture_sensors) }}"
+      any_wet: >
+        {{ sensors | selectattr('state','eq','on') | list | count > 0 }}
+      all_dry: >
+        {{ sensors | selectattr('state','eq','off') | list | count == (sensors | count) }}
+      sensor_name: "{{ trigger.to_state.name }}"
+      sensor_entity: "{{ trigger.entity_id }}"
+      notify_mobile: !input notify_mobile
+
+  - choose:
+
+      # -----------------------------------------------------------
+      # 💧 LEAK ALERT
+      # -----------------------------------------------------------
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.id == 'wet' }}"
+        sequence:
+
+          # 🏠 System notification (always works)
+          - service: persistent_notification.create
+            data:
+              title: "💧 Leak Detected"
+              message: "{{ sensor_name }} is WET ({{ sensor_entity }})."
+
+          # 📱 Mobile notification (beta, safe)
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ notify_mobile }}"
+                sequence:
+                  - service: notify.notify
+                    data:
+                      title: "💧 Leak Detected"
+                      message: "{{ sensor_name }} is WET."
+            default: []
+
+      # -----------------------------------------------------------
+      #  ☀️ ALL CLEAR
+      # -----------------------------------------------------------
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.id == 'dry' and all_dry }}"
+        sequence:
+
+          # 🏠 System notification (always works)
+          - service: persistent_notification.create
+            data:
+              title: "☀️ Dry"
+              message: "All sensors show dry."
+
+          # 📱 Mobile notification (beta, safe)
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ notify_mobile }}"
+                sequence:
+                  - service: notify.notify
+                    data:
+                      title: "☀️ Dry"
+                      message: "All sensors show dry."
+            default: []
+
+mode: restart
