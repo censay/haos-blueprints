@@ -57,8 +57,16 @@ Contributions are welcome! If you have any suggestions, improvements, or bug fix
 
 This blueprint was created by [censay](https://github.com/censay).
 
+Other blueprints
+- 👆 [Dual Button Control for Matter Remotes](https://github.com/censay/haos-blueprints/tree/master/ikea-bilresa-e2489-matter-smart-button)
+- 💡 [Light Control for Zigbee IKEA RODRET](https://github.com/censay/haos-blueprints/tree/master/ikea-rodret-e2201-zigbee-smart-button)
+
 ## Changelog
 - **Version 1.0.4**: Initial release with leak detection and all-clear notifications.
+
+## Other Blueprints by censay
+
+
 
 ## YAML
 ```yaml
