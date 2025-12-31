@@ -2,7 +2,9 @@
 
 [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fcensay%2Fhaos-blueprints%2Frefs%2Fheads%2Fmaster%2Fikea-klippbok-leak-detector%2Fikea-klippbok-leak-detector.yaml)
 
-This blueprint provides leak detection and alerts for selected Matter moisture sensors in Home Assistant.
+![KLIPPBOK Leak Detector](https://github.com/censay/haos-blueprints/raw/master/ikea-klippbok-leak-detector/klippbok.png)
+
+This blueprint provides leak detection and alerts for selected [IKEA KLIPPBOK Matter Leak Detector](https://www.ikea.com/us/en/p/klippbok-water-leak-sensor-smart-50617769/) -- it may work with other devices, this is designed to work with KLIPPBOK and matter.
 
 Options for use:
 
