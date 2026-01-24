@@ -1,4 +1,4 @@
-# Home Assistant Blueprints for Matter Devices
+# Home Assistant Blueprints for IKEA and Matter Devices
 
 Welcome to the Home Assistant Blueprints repository! This collection provides ready-to-use automation blueprints designed for Matter-compatible devices in Home Assistant. While IKEA offers some of the most affordable and reliable Matter devices, these blueprints are device-agnostic and can work with any compatible Matter hardware.
 
