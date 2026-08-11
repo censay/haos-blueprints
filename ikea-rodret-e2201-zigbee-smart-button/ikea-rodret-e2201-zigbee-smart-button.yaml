@@ -49,6 +49,17 @@ blueprint:
             - domain: [scene]
           multiple: false
 
+    step_pct:
+      name: Step %
+      description: Step (in percentage points) when increasing/decreasing brightness
+      default: 25
+      selector:
+        number:
+          min: 1
+          max: 50
+          step: 1
+          unit_of_measurement: Percentage Points
+
 mode: restart
 max_exceeded: silent
 
@@ -92,6 +103,7 @@ triggers:
 variables:
   light: !input light
   full_on_scene: !input full_on_scene
+  step_pct: !input step_pct
   is_mqtt: '{{ trigger.platform == "mqtt" }}'
   is_zha: '{{ trigger.platform == "event" and trigger.event.event_type == "zha_event" }}'
   remote_devices: !input remote_devices
@@ -116,9 +128,9 @@ actions:
           - variables:
               prev_brightness: '{{ (state_attr(light, "brightness")|int * 100 / 255) if is_state(light, "on") else 0 }}'
               new_brightness: >
-                {{ [ prev_brightness + 25 , 100 ] | min }}
+                {{ [ prev_brightness + step_pct , 100 ] | min }}
               adjusted_brightness: >
-                {{ [ new_brightness , 25 ] | max }}
+                {{ [ new_brightness , step_pct ] | max }}
           - service: light.turn_on
             target: {entity_id: !input light}
             data: {brightness_pct: '{{ adjusted_brightness }}'}
@@ -130,7 +142,7 @@ actions:
           - variables:
               prev_brightness: '{{ (state_attr(light, "brightness")|int * 100 / 255) if is_state(light, "on") else 0 }}'
               new_brightness: >
-                {{ [ prev_brightness - 25 , 1 ] | max }}
+                {{ [ prev_brightness - step_pct , 1 ] | max }}
           - service: light.turn_on
             target: {entity_id: !input light}
             data: {brightness_pct: '{{ new_brightness }}'}
