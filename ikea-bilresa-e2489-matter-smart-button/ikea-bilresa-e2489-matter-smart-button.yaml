@@ -39,6 +39,10 @@ blueprint:
         device:
           filter:
             - manufacturer: IKEA of Sweden
+              model: BILRESA remote control with buttons (Matter)
+            - manufaturer: IKEA
+              model: BILRESA remote control with buttons (Matter)
+            - model_id: E2489
 
     button1_event:
       name: Button 1 – Event Entity
