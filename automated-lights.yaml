@@ -1,0 +1,168 @@
+---
+blueprint:
+  name: Automated Lights
+  description: |
+    Switch lights on and off automatically.
+  domain: automation
+  author: karl@jorgensen.org.uk
+
+  input:
+    the_area:
+      name: Area
+      description: The area to control the lights in
+      # icon: "mdi:sofa"
+      selector:
+        area:
+          entity:
+            - domain: binary_sensor
+              device_class: motion
+            - domain: binary_sensor
+              device_class: occupancy
+            - domain: light
+
+    the_timer:
+      name: Off Timer
+      description: |
+        An existing timer which will be used for (eventually) switching the light off
+      # icon: "mdi:timer"
+      selector:
+        entity:
+          filter:
+            - domain: timer
+
+    the_lights:
+      name: Light(s)
+      description: |
+        The Light(s) to switch on when motion is sensed
+      # icon: "mdi:lightbulb-auto"
+      selector:
+        target:
+          entity:
+            - domain: light
+
+    daylight_sensor:
+      name: Daylight Sensor
+      description: A sensor/toggle/switch which goes "on" when it is daylight, and "off" when it is night
+      # icon: "mdi:theme-light-dark"
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+            - domain: input_boolean
+            - domain: switch
+
+mode: queued
+max: 20
+
+triggers:
+  - trigger: occupancy.detected
+    id: occupied
+    target:
+      area_id: !input the_area
+    options:
+      for: 00:00:00
+      behavior: each
+
+  - trigger: motion.detected
+    id: motion
+    target:
+      area_id: !input the_area
+    options:
+      for: 00:00:00
+      behavior: each
+
+  - trigger: light.turned_on
+    id: some_light_on
+    alias: Some Light On
+    target:
+      area_id: !input the_area
+    options:
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 0
+      behavior: each
+
+  - trigger: light.turned_off
+    id: all_lights_off
+    alias: All Lights Off
+    target:
+      area_id: !input the_area
+    options:
+      for: 00:00:00
+      behavior: all
+
+  - trigger: timer.finished
+    id: timer_finished
+    target:
+      entity_id: !input the_timer
+    options:
+      for: 00:00:00
+
+  - trigger: state
+    id: daylight_on
+    entity_id:
+      - !input daylight_sensor
+    to:
+      - 'on'
+
+conditions: []
+
+actions:
+  - choose:
+
+      - alias: Night-time motion
+        conditions:
+          - condition: trigger
+            id:
+              - occupied
+              - motion
+          - condition: state
+            entity_id: !input daylight_sensor
+            state:
+              - 'off'
+        sequence:
+          - action: light.turn_on
+            metadata: {}
+            target: !input the_lights
+            data: {}
+          - action: timer.start
+            metadata: {}
+            target:
+              entity_id: !input the_timer
+            data: {}
+            note: We want to restart the timer EACH time motion is sensed
+
+      - conditions:
+          - condition: trigger
+            id:
+              - some_light_on
+        sequence:
+          - action: timer.start
+            metadata: {}
+            target:
+              entity_id: !input the_timer
+            data: {}
+
+      - conditions:
+          - condition: trigger
+            id:
+              - daylight_on
+              - timer_finished
+        sequence:
+          - action: light.turn_off
+            metadata: {}
+            target:
+              area_id: !input the_area
+            data: {}
+
+      - conditions:
+          - condition: trigger
+            id:
+              - all_lights_off
+        sequence:
+          - action: timer.cancel
+            metadata: {}
+            target:
+              entity_id: !input the_timer
+            data: {}
